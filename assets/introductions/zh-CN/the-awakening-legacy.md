@@ -1,1 +1,9 @@
-**The Awakening Legacy** 是 The Awakening 的旧版试玩。点击「下载游戏」即可前往发布页面获取试玩包。
+**The Awakening Legacy** 是 **The Awakening** 的早期可玩原型，也是该系列最初的开发版本。
+
+本项目基于 **Unreal Engine 5.6**，主要使用 **Blueprint Visual Scripting** 开发，最初作为 **GDIM 61** 的课程项目制作。
+
+受限于早期开发周期与项目规模，Legacy 采用了相对简化的游戏系统与设计结构，同时也包含了许多后来成为正式版设计基础的早期概念。作为项目最初的实验性版本，Legacy 为后续的玩法设计、技术实现与整体开发方向提供了初步的探索基础。
+
+随着项目规模与设计目标的不断扩展，原有的技术架构和游戏系统已无法满足正式版的开发需求。因此，开发工作最终转向全面重构，以 **Unreal C++ 与 Blueprint** 相结合的方式重新实现核心系统，并进一步扩展游戏内容。
+
+目前，**The Awakening Legacy** 已停止开发，其设计与技术实现已由正在开发中的 **The Awakening** 正式版本取代。
