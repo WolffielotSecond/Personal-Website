@@ -1,0 +1,37 @@
+{
+    "labels": {
+        ".language-switch": "Language",
+        "#subtab": "Subpage",
+        "#writing": "Writing / Fragments",
+        ".works-sidebar": "Work covers",
+        ".works-nav-up": "Previous covers",
+        ".works-nav-down": "Next covers",
+        ".play-guide-open": "Open controls guide",
+        ".play-guide-return": "Return to game",
+        ".back-arrow": "Back to cover",
+        "#home .cover-arrow": "Open Home",
+        "[data-subtab=\"home\"]": "Home content",
+        "#works .cover-arrow": "Open Works",
+        "[data-subtab=\"works\"]": "Works content",
+        "#writing .cover-arrow": "Open Writing / Fragments",
+        "[data-subtab=\"writing\"]": "Writing / Fragments content",
+        "#about .cover-arrow": "Open About me",
+        "[data-subtab=\"about\"]": "About me content"
+    },
+    "text": {
+        ".work-coming-soon": "COMING SOON",
+        ".work-intro": "View Introduction",
+        ".play-guide-open span": "View Controls",
+        "#play-guide-title": "Controls Guide"
+    },
+    "actions": {
+        "STEAM PAGE": "STEAM PAGE",
+        "DOWNLOAD GAME": "DOWNLOAD GAME",
+        "PLAY ONLINE": "PLAY ONLINE"
+    },
+    "select": "Select {name}",
+    "video": "{name} video",
+    "introUnavailable": "Introduction unavailable.",
+    "controlsUnavailable": "Controls guide unavailable.",
+    "player": "Unity Web player"
+}

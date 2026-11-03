@@ -35,6 +35,7 @@
         }
 
         html {
+            --accent: #78D6D3;
             background: #000;
             overflow: hidden;
             overscroll-behavior-x: none;
@@ -226,7 +227,6 @@
         }
 
         .works-page {
-            --accent: #78D6D3;
             position: relative;
             overflow: clip;
             height: 100%;
@@ -712,13 +712,19 @@
             100% { --checker-a: 1; --checker-b: 1; }
         }
 
-        .play-online {
+        .work-actions {
             position: absolute;
             z-index: 2;
             left: 50%;
             top: 75%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             width: min(80%, 560px);
+        }
+
+        .play-online {
+            position: relative;
+            display: block;
+            width: 100%;
             min-height: 48px;
             padding: 0.45em 0.8em;
             border: 2px solid #fff;
@@ -739,7 +745,69 @@
             transition: opacity 200ms ease-in-out, visibility 0s, background-color 180ms, border-color 180ms, color 180ms;
         }
 
-        .play-online.is-hidden {
+        .work-intro {
+            width: auto;
+            min-height: 32px;
+            margin: 8px auto 0;
+            font-size: clamp(12px, 1.55vw, 24px);
+        }
+
+        body:has(.work-introduction[open]) .work-intro {
+            visibility: hidden;
+        }
+
+        .work-introduction {
+            -webkit-user-select: none;
+            user-select: none;
+            box-sizing: border-box;
+            position: fixed;
+            inset: 0;
+            margin: auto;
+            width: 60vw;
+            height: 60dvh;
+            max-width: none;
+            max-height: none;
+            padding: clamp(16px, 3vw, 44px);
+            border: 2px solid #fff;
+            border-radius: 28px;
+            background: #000;
+            color: var(--accent);
+            overflow: hidden;
+        }
+
+        .work-introduction[open] {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .work-introduction::backdrop {
+            backdrop-filter: blur(10px);
+            transition: backdrop-filter 350ms cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .work-introduction.is-closing::backdrop {
+            backdrop-filter: blur(0);
+        }
+
+        .work-introduction h2 {
+            margin: 0;
+            text-align: center;
+            font-size: clamp(16px, 3vw, 44px);
+        }
+
+        .work-introduction-text {
+            min-height: 0;
+            overflow: auto;
+            overscroll-behavior: contain;
+            scrollbar-color: var(--accent) #000;
+            padding-inline-end: 0.5rem;
+            line-height: 1.65;
+            overflow-wrap: anywhere;
+        }
+
+        .play-online.is-hidden,
+        .play-online.is-hidden + .work-intro {
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
@@ -784,8 +852,11 @@
                 bottom: 6px;
             }
 
-            .play-online {
+            .work-actions {
                 width: 88%;
+            }
+
+            .play-online:not(.work-intro) {
                 padding-inline: 0.5em;
                 font-size: clamp(11px, 3.2vw, 23px);
             }
@@ -807,9 +878,50 @@
                 animation: none;
             }
 
-            .play-online, .play-online.is-hidden {
+            .work-actions .play-online,
+            .play-online.is-hidden + .work-intro {
                 transition: none;
             }
+        }
+        .language-switch {
+            position: fixed;
+            inset: 16px 16px auto auto;
+            margin: 0;
+            padding: 0;
+            width: 104px;
+            height: 42px;
+            border: 0;
+            box-shadow: inset 0 0 0 2px white;
+            border-radius: 999px;
+            background: black;
+            color: var(--accent);
+            overflow: hidden;
+        }
+        .language-switch:popover-open { display: grid; grid-template-columns: 1fr 1fr; }
+        .language-switch button {
+            display: grid;
+            place-items: center;
+            padding: 0;
+            z-index: 1;
+            background: transparent;
+            border: 0;
+            color: inherit;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .language-switch button:focus-visible { text-decoration: underline; }
+        .language-highlight {
+            position: absolute;
+            z-index: 2;
+            inset: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            place-items: center;
+            background: var(--accent);
+            color: black;
+            font-weight: 600;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -866,9 +978,9 @@
                                 <img src="assets/covers/the-awakening-legacy.jpg" alt="" draggable="false">
                                 <span class="work-name">THE AWAKENING LEGACY</span>
                             </button>
-                            <button class="work-card" type="button" data-work="3" aria-label="Select THE RETRIVAL" aria-pressed="false">
+                            <button class="work-card" type="button" data-work="3" aria-label="Select THE RETRIEVAL" aria-pressed="false">
                                 <img src="assets/covers/TR_Header.png" alt="" draggable="false">
-                                <span class="work-name">THE RETRIVAL</span>
+                                <span class="work-name">THE RETRIEVAL</span>
                             </button>
                             <button class="work-card" type="button" data-work="4" aria-label="Select THE HOUSE OF JANUS" aria-pressed="false">
                                 <img src="assets/covers/THOJ_Header.png" alt="" draggable="false">
@@ -906,7 +1018,10 @@
                 <div class="preview-feather">
                     <div class="work-preview" role="img" aria-label="THE AWAKENING video"></div>
                 </div>
-                <button class="play-online" type="button">STEAM PAGE</button>
+                <div class="work-actions">
+                    <button class="play-online" type="button">STEAM PAGE</button>
+                    <button class="play-online work-intro" type="button" aria-haspopup="dialog" aria-controls="work-introduction">View Introduction</button>
+                </div>
             </div>
             <div class="play-view" hidden inert>
                 <button class="play-guide-arrow play-guide-open" type="button" aria-label="Open controls guide" aria-controls="play-guide" hidden>
@@ -919,23 +1034,8 @@
                     <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
                 </button>
                 <h3 id="play-guide-title">Controls Guide</h3>
-                <ul data-guide-work="3" hidden>
-                    <li>Press <strong>WSAD</strong> to move.</li>
-                    <li>Press <strong>E</strong> to interact.</li>
-                    <li>Press <strong>Space</strong> to parry attacks.</li>
-                    <li>Press <strong>F</strong> to melee the zombie when it is stunned.</li>
-                    <li>Press <strong>Q</strong> to heal.</li>
-                    <li>Press <strong>Right Mouse Button</strong> to aim and while aiming press <strong>Left Mouse Button</strong> to shoot and <strong>R</strong> to reload.</li>
-                    <li>Press <strong>C</strong> to crouch.</li>
-                </ul>
-                <ul data-guide-work="4" hidden>
-                    <li>Press <strong>WSAD</strong> to move.</li>
-                    <li>Press <strong>Space</strong> to blink.</li>
-                    <li>Use the <strong>Mouse Wheel</strong> to change speed.</li>
-                    <li>Press <strong>Tab</strong> to open the inventory.</li>
-                    <li>Press <strong>1</strong> to use a medpack. Each medpack restores one point of health.</li>
-                    <li>Press <strong>2</strong> to use an accelerator. It briefly increases your speed to help you escape.</li>
-                </ul>
+                <ul data-guide-work="3" hidden></ul>
+                <ul data-guide-work="4" hidden></ul>
             </section>
         </section>
         <section data-subtab="writing" aria-label="Writing / Fragments content" hidden></section>
@@ -943,6 +1043,10 @@
         <button class="cover-arrow back-arrow" type="button" aria-label="Back to cover" autofocus>
             <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M22 5 L6 28 L22 51"/></svg>
         </button>
+    </dialog>
+    <dialog class="work-introduction" id="work-introduction" aria-labelledby="work-introduction-title">
+        <h2 id="work-introduction-title"></h2>
+        <div class="work-introduction-text" tabindex="0" autofocus></div>
     </dialog>
     <script>
         window.addEventListener('contextmenu', event => event.preventDefault(), { capture: true });
@@ -978,7 +1082,6 @@
             subtab.querySelectorAll('[data-subtab]').forEach(page => {
                 page.hidden = page.dataset.subtab !== cover.id;
             });
-            subtab.setAttribute('aria-label', `${cover.querySelector('h1, h2').textContent} subpage`);
             transitioning = true;
             subtab.showModal();
             // Establish the starting position before beginning the slide.
@@ -1022,6 +1125,7 @@
         }
 
         window.addEventListener('wheel', event => {
+            if (document.getElementById('work-introduction').open) return;
             if (event.ctrlKey) return;
             if (Math.abs(event.deltaY) > Math.abs(event.deltaX) && event.target?.closest?.('.play-guide')) return;
             event.preventDefault();
@@ -1091,6 +1195,10 @@
         }, { passive: true });
         window.addEventListener('touchcancel', () => { touchStart = null; }, { passive: true });
         window.addEventListener('touchend', event => {
+            if (document.getElementById('work-introduction').open) {
+                touchStart = null;
+                return;
+            }
             if (!touchStart) return;
             const dx = event.changedTouches[0].clientX - touchStart.x;
             const dy = event.changedTouches[0].clientY - touchStart.y;
@@ -1104,8 +1212,14 @@
             }
         }, { passive: true });
     </script>
+    <div class="language-switch" popover="manual" role="group" aria-label="Language">
+        <button type="button" lang="zh-CN" data-language="zh-CN" aria-label="简体中文">中</button>
+        <button type="button" lang="en" data-language="en" aria-label="English">EN</button>
+        <div class="language-highlight" aria-hidden="true"><span>中</span><span>EN</span></div>
+    </div>
     <script src="assets/works.js"></script>
     <script src="assets/polygon.js"></script>
     <script src="assets/play.js"></script>
+    <script src="assets/language.js"></script>
 </body>
 </html>

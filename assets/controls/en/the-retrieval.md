@@ -1,0 +1,7 @@
+- Press **WSAD** to move.
+- Press **E** to interact.
+- Press **Space** to parry attacks.
+- Press **F** to melee the zombie when it is stunned.
+- Press **Q** to heal.
+- Hold the **Right Mouse Button** to aim. While aiming, press the **Left Mouse Button** to shoot and **R** to reload.
+- Press **C** to crouch.

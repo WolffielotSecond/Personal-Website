@@ -5,28 +5,34 @@ const previousCovers = worksPage.querySelector('.works-nav-up');
 const nextCovers = worksPage.querySelector('.works-nav-down');
 const workPreview = worksPage.querySelector('.work-preview');
 const playOnline = worksPage.querySelector('.play-online');
+let siteLocale;
+let siteLanguage = 'en';
 const workDetails = {
     '1': {
         name: 'THE AWAKENING',
+        introduction: 'the-awakening.md',
         action: 'STEAM PAGE',
         url: 'https://store.steampowered.com/app/4811530/The_Awakening/',
         video: 'assets/videos/black-screen.mp4',
     },
     '2': {
         name: 'THE AWAKENING LEGACY',
+        introduction: 'the-awakening-legacy.md',
         action: 'DOWNLOAD GAME',
         url: 'https://github.com/WolffielotSecond/The-Awakening/releases/tag/demo_v0.6.2',
         video: 'assets/videos/steam-trailer-web.mp4',
         poster: 'assets/covers/the-awakening-legacy.jpg',
     },
     '3': {
-        name: 'THE RETRIVAL',
+        name: 'THE RETRIEVAL',
+        introduction: 'the-retrieval.md',
         action: 'PLAY ONLINE',
         video: 'assets/videos/the-retrieval.mp4',
         background: 'assets/covers/TR_Header.png',
     },
     '4': {
         name: 'THE HOUSE OF JANUS',
+        introduction: 'the-house-of-janus.md',
         action: 'PLAY ONLINE',
         video: 'assets/videos/the-house-of-janus.mp4',
         background: 'assets/covers/THOJ_Header.png',
@@ -116,11 +122,17 @@ entranceObserver.observe(worksDialog, { attributes: true, attributeFilter: ['ope
 entranceObserver.observe(worksPage, { attributes: true, attributeFilter: ['hidden'] });
 syncWorksEntrance();
 
+function updatePreviewLabel(work) {
+    const name = workDetails[work].name;
+    workPreview.setAttribute('aria-label', siteLocale?.video.replace('{name}', name) ?? `${name} video`);
+}
+
 function updateWorkAction(work) {
     const details = workDetails[work];
-    playOnline.textContent = details.action;
+    const action = siteLocale?.actions[details.action] ?? details.action;
+    playOnline.textContent = action;
     playOnline.dataset.selectedWork = work;
-    playOnline.setAttribute('aria-label', `${details.action} — ${details.name}`);
+    playOnline.setAttribute('aria-label', `${action} — ${details.name}`);
 }
 
 playOnline.addEventListener('click', () => {
@@ -177,7 +189,7 @@ function finishPreviewSwitch(incoming, work) {
     incoming.className = 'preview-layer preview-current';
     workPreview.replaceChildren(incoming);
     workPreview.classList.remove('is-switching');
-    workPreview.setAttribute('aria-label', `${workDetails[work].name} video`);
+    updatePreviewLabel(work);
     workPreview.setAttribute('aria-busy', 'false');
     currentWork = work;
     previewSwitching = false;
@@ -267,3 +279,110 @@ worksPage.querySelectorAll('.work-card[data-work]').forEach(card => {
 });
 
 moveWorkCovers(0);
+
+const introButton = worksPage.querySelector('.work-intro');
+const introDialog = document.getElementById('work-introduction');
+const introTitle = introDialog.querySelector('h2');
+const introText = introDialog.querySelector('.work-introduction-text');
+let introAnimations = [];
+let introLoad;
+
+function refreshIntroduction() {
+    introLoad?.abort();
+    introLoad = new AbortController();
+    introTitle.textContent = workDetails[currentWork].name;
+    const folder = siteLanguage === 'en' ? '' : `${siteLanguage}/`;
+    loadIntroduction(folder + workDetails[currentWork].introduction, introLoad.signal);
+}
+
+async function loadIntroduction(file, signal) {
+    introText.textContent = '';
+    try {
+        const response = await fetch(`assets/introductions/${file}`, { cache: 'no-cache', signal });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const markdown = (await response.text()).trim();
+        if (signal.aborted) return;
+
+        for (const block of markdown.split(/\r?\n\s*\r?\n/)) {
+            for (const line of block.split(/\r?\n(?=#{1,3} )/)) {
+                const heading = /^(#{1,3}) +([^\r\n]+)(?:\r?\n|$)/.exec(line);
+                if (heading) {
+                    const element = document.createElement(`h${heading[1].length + 2}`);
+                    element.textContent = heading[2];
+                    introText.append(element);
+                }
+                const body = heading ? line.slice(heading[0].length) : line;
+                if (!body.trim()) continue;
+                const paragraph = document.createElement('p');
+                appendMarkdownBold(paragraph, body);
+                introText.append(paragraph);
+            }
+        }
+    } catch {
+        if (!signal.aborted) introText.textContent = siteLocale?.introUnavailable ?? 'Introduction unavailable.';
+    }
+}
+
+function appendMarkdownBold(element, markdown) {
+    markdown.split(/(\*\*[^*]+\*\*)/).forEach((part, index) => {
+        if (index % 2 === 0) {
+            element.append(part);
+            return;
+        }
+        const strong = document.createElement('strong');
+        strong.textContent = part.slice(2, -2);
+        element.append(strong);
+    });
+}
+
+introButton.addEventListener('click', () => {
+    const buttonBounds = introButton.getBoundingClientRect();
+    introDialog.showModal();
+    refreshIntroduction();
+    introAnimations = [];
+    introText.scrollTop = 0;
+    if (previewReducedMotion.matches) return;
+
+    const panelBounds = introDialog.getBoundingClientRect();
+    const x = buttonBounds.left - panelBounds.left + (buttonBounds.width - panelBounds.width) / 2;
+    const y = buttonBounds.top - panelBounds.top + (buttonBounds.height - panelBounds.height) / 2;
+    const scaleX = buttonBounds.width / panelBounds.width;
+    const scaleY = buttonBounds.height / panelBounds.height;
+    introAnimations.push(introDialog.animate([
+        { transform: `translate(${x}px, ${y}px) scale(${scaleX}, ${scaleY})`, borderRadius: '999px' },
+        { transform: 'none', borderRadius: '28px' },
+    ], { duration: 350, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'both' }));
+    for (const element of [introTitle, introText]) {
+        introAnimations.push(element.animate([{ opacity: 0 }, { opacity: 1 }], {
+            delay: 150, duration: 200, fill: 'both',
+        }));
+    }
+});
+
+async function closeIntroduction() {
+    if (introDialog.classList.contains('is-closing')) return;
+    if (introAnimations.length && !previewReducedMotion.matches) {
+        introDialog.classList.add('is-closing');
+        for (const animation of introAnimations) animation.reverse();
+        await Promise.allSettled(introAnimations.map(animation => animation.finished));
+    }
+    introDialog.close();
+    introLoad.abort();
+    introDialog.classList.remove('is-closing');
+    for (const animation of introAnimations) animation.cancel();
+    introAnimations = [];
+}
+
+introDialog.addEventListener('cancel', event => {
+    event.preventDefault();
+    closeIntroduction();
+});
+
+introDialog.addEventListener('click', event => {
+    if (event.target !== introDialog) return;
+    const bounds = introDialog.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right ||
+        event.clientY < bounds.top || event.clientY > bounds.bottom) {
+        closeIntroduction();
+    }
+});

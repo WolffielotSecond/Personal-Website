@@ -1,0 +1,6 @@
+- Press **WSAD** to move.
+- Press **Space** to blink.
+- Use the **Mouse Wheel** to change speed.
+- Press **Tab** to open the inventory.
+- Press **1** to use a medpack. Each medpack restores one point of health.
+- Press **2** to use an accelerator. It briefly increases your speed to help you escape.

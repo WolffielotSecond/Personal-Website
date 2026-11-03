@@ -73,7 +73,7 @@ function startWorkPlay(work) {
         if (gameInfo) {
             const game = document.createElement('iframe');
             game.src = `assets/games/${gameInfo.folder}/index.html`;
-            game.title = gameInfo.title;
+            game.title = siteLocale?.player ?? gameInfo.title;
             unityMount.append(game);
             unityMount.setAttribute('aria-label', `${gameInfo.title} player`);
         } else {
@@ -95,7 +95,10 @@ function setGuideOpen(open) {
     (open ? guideReturn : guideOpen).focus({ preventScroll: true });
 }
 
-guideOpen.addEventListener('click', () => setGuideOpen(true));
+guideOpen.addEventListener('click', () => {
+    if (siteLocale) refreshControlGuides(siteLanguage, siteLocale);
+    setGuideOpen(true);
+});
 guideReturn.addEventListener('click', () => setGuideOpen(false));
 window.addEventListener('resize', () => {
     if (worksPage.classList.contains('is-play-returning')) placePreviewFrame();
@@ -110,7 +113,7 @@ function resetWorkPlay() {
     previewBlur.setAttribute('stdDeviation', '10');
     unityMount.remove();
     unityMount.replaceChildren();
-    previewStage.insertBefore(previewFrame, playOnline);
+    previewStage.insertBefore(previewFrame, playOnline.parentElement);
     previewFrame.removeAttribute('style');
     worksPage.classList.remove('is-playing', 'is-guide-open', 'is-play-returning');
     playView.classList.remove('is-expanding', 'is-ready');

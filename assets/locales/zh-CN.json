@@ -1,0 +1,37 @@
+{
+    "labels": {
+        ".language-switch": "语言",
+        "#subtab": "子页面",
+        "#writing": "写作 / 片段",
+        ".works-sidebar": "作品封面",
+        ".works-nav-up": "上一个封面",
+        ".works-nav-down": "下一个封面",
+        ".play-guide-open": "打开操作指南",
+        ".play-guide-return": "返回游戏",
+        ".back-arrow": "返回封面",
+        "#home .cover-arrow": "打开首页",
+        "[data-subtab=\"home\"]": "首页内容",
+        "#works .cover-arrow": "打开作品",
+        "[data-subtab=\"works\"]": "作品内容",
+        "#writing .cover-arrow": "打开写作 / 片段",
+        "[data-subtab=\"writing\"]": "写作 / 片段内容",
+        "#about .cover-arrow": "打开关于我",
+        "[data-subtab=\"about\"]": "关于我内容"
+    },
+    "text": {
+        ".work-coming-soon": "敬请期待",
+        ".work-intro": "作品介绍",
+        ".play-guide-open span": "查看键位绑定",
+        "#play-guide-title": "操作指南"
+    },
+    "actions": {
+        "STEAM PAGE": "STEAM商店页面",
+        "DOWNLOAD GAME": "下载游戏",
+        "PLAY ONLINE": "在线试玩"
+    },
+    "select": "选择{name}",
+    "video": "{name}预览视频",
+    "introUnavailable": "暂时无法加载介绍。",
+    "controlsUnavailable": "暂时无法加载操作指南。",
+    "player": "Unity 网页播放器"
+}
