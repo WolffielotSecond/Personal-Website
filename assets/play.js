@@ -63,6 +63,9 @@ function startWorkPlay(work) {
         driftAnimation?.updatePlaybackRate(0);
         playView.classList.add('is-ready');
         unityMount.dataset.work = work;
+        controlsGuide.querySelectorAll('[data-guide-work]').forEach(guide => {
+            guide.hidden = guide.dataset.guideWork !== work;
+        });
         const gameInfo = {
             '3': { folder: 'the-retrieval', title: 'The Retrieval' },
             '4': { folder: 'the-house-of-janus', title: 'The House of Janus' },

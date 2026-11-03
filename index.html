@@ -588,6 +588,7 @@
         .play-guide dl { margin: 0; max-width: 500px; }
         .play-guide dl div { display: flex; justify-content: space-between; gap: 1em; padding: 0.65em 0; }
         .play-guide dd { margin: 0; opacity: 0.75; }
+        .play-guide ul { margin: 0; padding-left: 1.2em; line-height: 1.65; }
 
         .play-guide-arrow {
             position: absolute;
@@ -613,6 +614,14 @@
             stroke-linecap: round;
             stroke-linejoin: round;
             transform: rotate(90deg);
+        }
+
+        .play-guide-open {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            width: max-content;
+            font: inherit;
         }
 
         .play-guide-return { top: 8px; bottom: auto; }
@@ -858,11 +867,11 @@
                                 <span class="work-name">THE AWAKENING LEGACY</span>
                             </button>
                             <button class="work-card" type="button" data-work="3" aria-label="Select THE RETRIVAL" aria-pressed="false">
-                                <img src="assets/covers/name-3.svg" alt="" draggable="false">
+                                <img src="assets/covers/TR_Header.png" alt="" draggable="false">
                                 <span class="work-name">THE RETRIVAL</span>
                             </button>
                             <button class="work-card" type="button" data-work="4" aria-label="Select THE HOUSE OF JANUS" aria-pressed="false">
-                                <img src="assets/covers/name-4.svg" alt="" draggable="false">
+                                <img src="assets/covers/THOJ_Header.png" alt="" draggable="false">
                                 <span class="work-name">THE HOUSE OF JANUS</span>
                             </button>
                             <div class="work-card work-coming-soon">COMING SOON</div>
@@ -901,6 +910,7 @@
             </div>
             <div class="play-view" hidden inert>
                 <button class="play-guide-arrow play-guide-open" type="button" aria-label="Open controls guide" aria-controls="play-guide" hidden>
+                    <span>View Controlls</span>
                     <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
                 </button>
             </div>
@@ -908,12 +918,24 @@
                 <button class="play-guide-arrow play-guide-return" type="button" aria-label="Return to game">
                     <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
                 </button>
-                <h3 id="play-guide-title">操作指南</h3>
-                <dl>
-                    <div><dt>移动</dt><dd>待补充</dd></div>
-                    <div><dt>视角</dt><dd>待补充</dd></div>
-                    <div><dt>交互</dt><dd>待补充</dd></div>
-                </dl>
+                <h3 id="play-guide-title">Controls Guide</h3>
+                <ul data-guide-work="3" hidden>
+                    <li>Press <strong>WSAD</strong> to move.</li>
+                    <li>Press <strong>E</strong> to interact.</li>
+                    <li>Press <strong>Space</strong> to parry attacks.</li>
+                    <li>Press <strong>F</strong> to melee the zombie when it is stunned.</li>
+                    <li>Press <strong>Q</strong> to heal.</li>
+                    <li>Press <strong>Right Mouse Button</strong> to aim and while aiming press <strong>Left Mouse Button</strong> to shoot and <strong>R</strong> to reload.</li>
+                    <li>Press <strong>C</strong> to crouch.</li>
+                </ul>
+                <ul data-guide-work="4" hidden>
+                    <li>Press <strong>WSAD</strong> to move.</li>
+                    <li>Press <strong>Space</strong> to blink.</li>
+                    <li>Use the <strong>Mouse Wheel</strong> to change speed.</li>
+                    <li>Press <strong>Tab</strong> to open the inventory.</li>
+                    <li>Press <strong>1</strong> to use a medpack. Each medpack restores one point of health.</li>
+                    <li>Press <strong>2</strong> to use an accelerator. It briefly increases your speed to help you escape.</li>
+                </ul>
             </section>
         </section>
         <section data-subtab="writing" aria-label="Writing / Fragments content" hidden></section>

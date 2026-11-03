@@ -19,8 +19,18 @@ const workDetails = {
         video: 'assets/videos/steam-trailer-web.mp4',
         poster: 'assets/covers/the-awakening-legacy.jpg',
     },
-    '3': { name: 'THE RETRIVAL', action: 'PLAY ONLINE', video: 'assets/videos/the-retrieval.mp4' },
-    '4': { name: 'THE HOUSE OF JANUS', action: 'PLAY ONLINE', video: 'assets/videos/black-screen.mp4' },
+    '3': {
+        name: 'THE RETRIVAL',
+        action: 'PLAY ONLINE',
+        video: 'assets/videos/the-retrieval.mp4',
+        background: 'assets/covers/TR_Header.png',
+    },
+    '4': {
+        name: 'THE HOUSE OF JANUS',
+        action: 'PLAY ONLINE',
+        video: 'assets/videos/the-house-of-janus.mp4',
+        background: 'assets/covers/THOJ_Header.png',
+    },
 };
 const visibleCoverCount = 4;
 let workOffset = 0;
@@ -38,7 +48,7 @@ let worksWasVisible = false;
 
 function setWorkBackground(work, animate = true) {
     const card = worksPage.querySelector(`.work-card[data-work="${work}"]`);
-    const source = card.querySelector('img').getAttribute('src');
+    const source = workDetails[work].background ?? card.querySelector('img').getAttribute('src');
     const layer = document.createElement('div');
     layer.className = 'works-background-image';
     layer.dataset.work = work;
