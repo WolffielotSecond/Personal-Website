@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The House of Janus</title>
+    <style>
+        html, body { height: 100%; margin: 0; overflow: hidden; background: #000; }
+        canvas { display: block; width: 100%; height: 100%; outline: none; }
+        #status { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font: 16px system-ui; pointer-events: none; }
+        #status[hidden] { display: none; }
+    </style>
+</head>
+<body>
+    <canvas id="unity-canvas" width="1280" height="720" tabindex="-1" aria-label="The House of Janus"></canvas>
+    <div id="status" role="status">Loading…</div>
+    <script>
+        window.addEventListener('contextmenu', event => event.preventDefault());
+        const status = document.querySelector('#status');
+        const canvas = document.querySelector('#unity-canvas');
+        const loader = document.createElement('script');
+
+        loader.src = 'Build/Builds.loader.js';
+        loader.onerror = () => { status.textContent = 'Unable to load the game. Please refresh and try again.'; };
+        loader.onload = async () => {
+            try {
+                await createUnityInstance(canvas, {
+                    dataUrl: 'Build/Builds.data',
+                    frameworkUrl: 'Build/Builds.framework.js',
+                    codeUrl: 'Build/Builds.wasm',
+                    streamingAssetsUrl: 'StreamingAssets',
+                    companyName: 'DefaultCompany',
+                    productName: 'ZotJam2026',
+                    productVersion: '1.0',
+                }, progress => {
+                    status.textContent = `Loading… ${Math.round(progress * 100)}%`;
+                });
+                status.hidden = true;
+            } catch (error) {
+                status.textContent = String(error);
+            }
+        };
+        if (location.protocol === 'file:') {
+            status.textContent = 'Open this game through the website or a local HTTP server.';
+        } else {
+            document.body.append(loader);
+        }
+    </script>
+</body>
+</html>

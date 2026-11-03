@@ -35,8 +35,15 @@ jobs:
               exit 1
             fi
           done
+          unity_dir=assets/games/the-house-of-janus
+          for required in index.html Build/Builds.loader.js Build/Builds.framework.js Build/Builds.data Build/Builds.wasm; do
+            if [[ ! -s "$unity_dir/$required" ]]; then
+              echo "Missing Unity build file: $unity_dir/$required" >&2
+              exit 1
+            fi
+          done
           shopt -s globstar nullglob
-          for asset in assets/videos/*.mp4 assets/games/**/*.unityweb; do
+          for asset in assets/videos/*.mp4 assets/games/**/*.unityweb assets/games/**/*.data assets/games/**/*.wasm; do
             if git lfs pointer --check --file="$asset"; then
               echo "Asset is still an LFS pointer: $asset" >&2
               exit 1

@@ -63,12 +63,16 @@ function startWorkPlay(work) {
         driftAnimation?.updatePlaybackRate(0);
         playView.classList.add('is-ready');
         unityMount.dataset.work = work;
-        if (work === '3') {
+        const gameInfo = {
+            '3': { folder: 'the-retrieval', title: 'The Retrieval' },
+            '4': { folder: 'the-house-of-janus', title: 'The House of Janus' },
+        }[work];
+        if (gameInfo) {
             const game = document.createElement('iframe');
-            game.src = 'assets/games/the-retrieval/index.html';
-            game.title = 'The Retrieval';
+            game.src = `assets/games/${gameInfo.folder}/index.html`;
+            game.title = gameInfo.title;
             unityMount.append(game);
-            unityMount.setAttribute('aria-label', 'The Retrieval player');
+            unityMount.setAttribute('aria-label', `${gameInfo.title} player`);
         } else {
             unityMount.setAttribute('aria-label', 'Unity Web player placeholder');
         }
