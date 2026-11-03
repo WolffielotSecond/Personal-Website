@@ -5,24 +5,763 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wolffielot</title>
+    <meta name="description" content="Wolffielot — works, writing and fragments, and about me.">
     <style>
+        @font-face {
+            font-family: "Google Sans";
+            src: url("assets/fonts/GoogleSans-Regular.ttf") format("truetype");
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: "Google Sans";
+            src: url("assets/fonts/GoogleSans-Bold.ttf") format("truetype");
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Site-wide design preference: no focus frames, including during navigation. */
+        :focus,
+        :focus-visible {
+            outline: none;
+            box-shadow: none;
+        }
+
+        html {
+            background: #000;
+            overflow: hidden;
+            overscroll-behavior-x: none;
+            scrollbar-width: none;
+        }
+
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
         body {
-            background: #11151b;
+            margin: 0;
+            overflow: hidden;
+            background: #000;
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: "Google Sans", Arial, sans-serif;
+        }
+
+        .covers {
+            position: fixed;
+            inset: 0;
+            overflow: clip;
+            touch-action: pinch-zoom;
+        }
+
+        .cover-track {
+            transform: translateY(calc(var(--cover-index, 0) * -100vh));
+            transform: translateY(calc(var(--cover-index, 0) * -100dvh));
+            transition: transform 800ms cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        .panel {
+            position: relative;
+            height: 100vh;
+            height: 100dvh;
+            display: grid;
+            align-items: end;
+            justify-items: start;
+            padding: 0;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        h1, h2 {
+            margin: 0;
+            font-size: min(30vw, 52dvh);
+            font-weight: 400;
+            line-height: 0.76;
+            letter-spacing: -0.065em;
+            white-space: nowrap;
+        }
+
+        .panel h1, .panel h2 {
+            -webkit-user-select: none;
+            user-select: none;
+            cursor: default;
+        }
+
+        #works h2 {
+            font-size: min(25vw, 52dvh);
+        }
+
+        #writing h2 {
+            font-size: min(25vw, 52dvh);
+        }
+
+        #about h2 {
+            font-size: min(22vw, 52dvh);
+        }
+
+        .cover-arrow {
+            position: absolute;
+            top: 50%;
+            right: clamp(20px, 3vw, 64px);
+            transform: translateY(-50%);
+            display: grid;
+            place-items: center;
+            min-width: 48px;
+            min-height: 64px;
+            padding: 8px;
+            border: 0;
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .panel > .cover-arrow {
+            color: #78D6D3;
+        }
+
+        .cover-arrow:focus-visible svg {
+            stroke-width: 2.5;
+        }
+
+        .cover-arrow svg {
+            display: block;
+            width: clamp(22px, 2vw, 32px);
+            height: auto;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            animation: arrow-nudge 3.6s ease-in-out infinite;
+        }
+
+        @keyframes arrow-nudge {
+            0%, 70%, 90%, 100% {
+                transform: translateX(0);
+            }
+            80% {
+                transform: translateX(9px);
+            }
+        }
+
+        .subtab {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            max-width: none;
+            height: 100vh;
+            height: 100dvh;
+            max-height: none;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            touch-action: pinch-zoom;
+            background: #fff;
+            color: #000;
+            transform: translateX(100%);
+            transition: transform 800ms cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        .subtab::backdrop {
+            background: transparent;
+        }
+
+        .subtab.is-open {
+            transform: translateX(0);
+        }
+
+        .back-arrow {
+            left: clamp(20px, 3vw, 64px);
+            right: auto;
+        }
+
+        .back-arrow svg {
+            animation: none;
+        }
+
+        .works-page {
+            --accent: #78D6D3;
+            height: 100%;
+            padding: 3vh 1vw 2vh 12vw;
+            display: grid;
+            grid-template-columns: 19vw minmax(0, 1fr);
+            gap: 1vw;
+        }
+
+        .works-page[hidden] {
+            display: none;
+        }
+
+        .works-sidebar {
+            min-height: 0;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr) auto;
+            justify-items: center;
+            gap: 1vh;
+        }
+
+        .works-nav {
+            display: grid;
+            place-items: center;
+            width: clamp(40px, 8vh, 76px);
+            aspect-ratio: 1;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #000;
+            cursor: pointer;
+            transition: color 180ms, opacity 180ms;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .works-nav:not(:disabled):hover {
+            color: var(--accent);
+        }
+
+        .works-nav:disabled {
+            opacity: 0.18;
+            cursor: default;
+        }
+
+        .works-nav svg {
+            width: 16px;
+            height: 32px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transform: rotate(-90deg);
+            transition: translate 200ms;
+        }
+
+        .works-nav-down svg {
+            transform: rotate(90deg);
+        }
+
+        .works-nav-up:not(:disabled):hover svg {
+            translate: 0 -3px;
+        }
+
+        .works-nav-down:not(:disabled):hover svg {
+            translate: 0 3px;
+        }
+
+        .works-frame {
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+            padding: 5px;
+            border: 3px solid #000;
+            border-radius: 18px;
+        }
+
+        .works-viewport {
+            height: 100%;
+            overflow: clip;
+            border-radius: 10px;
+        }
+
+        .works-track {
+            position: relative;
+            --work-offset: 0;
+            --selected-index: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            height: 100%;
+            transform: translateY(calc(var(--work-offset) * (-25% - 2px)));
+            transition: transform 800ms cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        .work-card {
+            position: relative;
+            flex: 0 0 calc((100% - 24px) / 4);
+            min-height: 0;
+            width: 100%;
+            overflow: hidden;
+            padding: 0;
+            border: 3px solid #000;
+            border-radius: 12px;
+            background: #171c25;
+            color: #fff;
+            font: inherit;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .work-selection {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            width: 100%;
+            height: calc((100% - 24px) / 4);
+            border: 6px solid var(--accent);
+            border-radius: 12px;
+            pointer-events: none;
+            transform: translateY(calc(var(--selected-index) * (100% + 8px)));
+            transition: transform 800ms cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        .work-card img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        .work-card[data-work="2"] img {
+            object-fit: contain;
+            padding: 6px;
+            background: #000;
+        }
+
+        .work-name {
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            bottom: 8px;
+            font-size: clamp(12px, 1.4vw, 24px);
+            line-height: 1.15;
+            text-align: left;
+            letter-spacing: -0.03em;
+        }
+
+        .work-coming-soon {
+            display: grid;
+            place-items: center;
+            background: #000;
+            cursor: default;
             text-align: center;
-            padding-top: 20vh;
+            font-size: clamp(11px, 1.35vw, 22px);
         }
-        h1 {
-            font-size: 64px;
+
+        .works-stage {
+            position: relative;
+            min-width: 0;
         }
-        p {
-            color: #aaaaaa;
+
+        .work-preview {
+            position: absolute;
+            inset: 2vh 0 0;
+            --tile-size: 160px;
+            --grid-x: 0px;
+            --grid-y: 0px;
+            clip-path: polygon(1% 43%, 6% 8%, 43% 2%, 92% 5%, 99% 34%, 95% 92%, 57% 98%, 5% 93%);
+        }
+
+        .preview-edge {
+            position: absolute;
+            top: 2vh;
+            left: 0;
+            z-index: 1;
+            width: 100%;
+            height: calc(100% - 2vh);
+            pointer-events: none;
+        }
+
+        @property --checker-a {
+            syntax: "<number>";
+            inherits: false;
+            initial-value: 1;
+        }
+
+        @property --checker-b {
+            syntax: "<number>";
+            inherits: false;
+            initial-value: 1;
+        }
+
+        .preview-layer, .preview-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .preview-layer {
+            background: var(--preview-color);
+        }
+
+        .preview-video {
+            object-fit: cover;
+            filter: brightness(0.88);
+        }
+
+        .is-switching .preview-layer {
+            mask-image: repeating-conic-gradient(
+                rgb(0 0 0 / var(--checker-a)) 0% 25%,
+                rgb(0 0 0 / var(--checker-b)) 0% 50%
+            );
+            mask-size: calc(var(--tile-size) * 2) calc(var(--tile-size) * 2);
+            mask-position: var(--grid-x) var(--grid-y);
+        }
+
+        .is-switching .preview-current {
+            animation: checker-out 600ms ease-in-out both;
+        }
+
+        .is-switching .preview-incoming {
+            animation: checker-in 600ms ease-in-out both;
+        }
+
+        @keyframes checker-out {
+            0% { --checker-a: 1; --checker-b: 1; }
+            33.333% { --checker-a: 0; --checker-b: 1; }
+            66.667%, 100% { --checker-a: 0; --checker-b: 0; }
+        }
+
+        @keyframes checker-in {
+            0%, 33.333% { --checker-a: 0; --checker-b: 0; }
+            66.667% { --checker-a: 1; --checker-b: 0; }
+            100% { --checker-a: 1; --checker-b: 1; }
+        }
+
+        .play-online {
+            position: absolute;
+            z-index: 2;
+            left: 50%;
+            top: 75%;
+            transform: translate(-50%, -50%);
+            width: min(80%, 560px);
+            min-height: 48px;
+            padding: 0.45em 0.8em;
+            border: 0;
+            border-radius: 999px;
+            overflow: hidden;
+            background: #000;
+            color: var(--accent);
+            font: inherit;
+            font-size: clamp(14px, 3.2vw, 52px);
+            line-height: 1.1;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 200ms ease-in-out, visibility 0s, background-color 180ms, color 180ms;
+        }
+
+        .play-online.is-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 200ms ease-in-out, visibility 0s 200ms, background-color 180ms, color 180ms;
+        }
+
+        .play-online:hover {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .play-online::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 80ms;
+        }
+
+        .play-online:active::after {
+            opacity: 0.22;
+        }
+
+        @media (max-width: 700px) {
+            .works-page {
+                padding-left: 16vw;
+                grid-template-columns: 32% minmax(0, 1fr);
+                gap: 2vw;
+            }
+
+            .work-name {
+                left: 5px;
+                bottom: 6px;
+            }
+
+            .play-online {
+                width: 88%;
+                padding-inline: 0.5em;
+                font-size: clamp(11px, 3.2vw, 23px);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .subtab, .cover-track, .works-track, .work-selection {
+                transition-duration: 0s;
+            }
+
+            .works-nav svg {
+                transition: none;
+                translate: none;
+            }
+
+            .cover-arrow svg {
+                animation: none;
+            }
+
+            .play-online, .play-online.is-hidden {
+                transition: none;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Wolffielot.</h1>
-    <p>Welcome to my personal website.</p>
+    <main class="covers">
+        <div class="cover-track">
+        <section class="panel" id="home" aria-labelledby="home-title" tabindex="0">
+            <h1 id="home-title">HOME</h1>
+            <button class="cover-arrow" type="button" aria-label="Open Home" aria-haspopup="dialog" aria-controls="subtab">
+                <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
+            </button>
+        </section>
+        <section class="panel" id="works" aria-labelledby="works-title" tabindex="0">
+            <h2 id="works-title">WORKS</h2>
+            <button class="cover-arrow" type="button" aria-label="Open Works" aria-haspopup="dialog" aria-controls="subtab">
+                <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
+            </button>
+        </section>
+        <section class="panel" id="writing" aria-label="Writing / Fragments" tabindex="0">
+            <h2>WRITING</h2>
+            <button class="cover-arrow" type="button" aria-label="Open Writing / Fragments" aria-haspopup="dialog" aria-controls="subtab">
+                <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
+            </button>
+        </section>
+        <section class="panel" id="about" aria-labelledby="about-title" tabindex="0">
+            <h2 id="about-title">ABOUT ME</h2>
+            <button class="cover-arrow" type="button" aria-label="Open About me" aria-haspopup="dialog" aria-controls="subtab">
+                <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
+            </button>
+        </section>
+        </div>
+    </main>
+    <dialog class="subtab" id="subtab" aria-label="Subpage">
+        <section data-subtab="home" aria-label="Home content" hidden></section>
+        <section class="works-page" data-subtab="works" aria-label="Works content" hidden>
+            <div class="works-sidebar" aria-label="Work covers">
+                <button class="works-nav works-nav-up" type="button" aria-label="Previous covers" disabled>
+                    <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
+                </button>
+                <div class="works-frame">
+                    <div class="works-viewport">
+                        <div class="works-track">
+                            <button class="work-card" type="button" data-work="1" aria-label="Select THE AWAKENING" aria-pressed="true">
+                                <img src="assets/covers/name-1.svg" alt="" draggable="false">
+                                <span class="work-name">THE AWAKENING</span>
+                            </button>
+                            <button class="work-card" type="button" data-work="2" aria-label="Select THE AWAKENING LEGACY" aria-pressed="false">
+                                <img src="assets/covers/the-awakening-legacy.jpg" alt="" draggable="false">
+                                <span class="work-name">THE AWAKENING LEGACY</span>
+                            </button>
+                            <button class="work-card" type="button" data-work="3" aria-label="Select THE RETRIVAL" aria-pressed="false">
+                                <img src="assets/covers/name-3.svg" alt="" draggable="false">
+                                <span class="work-name">THE RETRIVAL</span>
+                            </button>
+                            <button class="work-card" type="button" data-work="4" aria-label="Select THE HOUSE OF JANUS" aria-pressed="false">
+                                <img src="assets/covers/name-4.svg" alt="" draggable="false">
+                                <span class="work-name">THE HOUSE OF JANUS</span>
+                            </button>
+                            <div class="work-card work-coming-soon">COMING SOON</div>
+                            <div class="work-selection" aria-hidden="true"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="works-nav works-nav-down" type="button" aria-label="Next covers">
+                    <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
+                </button>
+            </div>
+            <div class="works-stage">
+                <div class="work-preview" role="img" aria-label="THE AWAKENING video"></div>
+                <svg class="preview-edge" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
+                    <defs>
+                        <filter id="preview-edge-soften" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+                            <feGaussianBlur stdDeviation="8"/>
+                        </filter>
+                    </defs>
+                    <polygon points="10,430 60,80 430,20 920,50 990,340 950,920 570,980 50,930" fill="none" stroke="white" stroke-width="40" filter="url(#preview-edge-soften)"/>
+                </svg>
+                <button class="play-online" type="button">STEAM PAGE</button>
+            </div>
+        </section>
+        <section data-subtab="writing" aria-label="Writing / Fragments content" hidden></section>
+        <section data-subtab="about" aria-label="About me content" hidden></section>
+        <button class="cover-arrow back-arrow" type="button" aria-label="Back to cover" autofocus>
+            <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M22 5 L6 28 L22 51"/></svg>
+        </button>
+    </dialog>
+    <script>
+        const covers = [...document.querySelectorAll('.panel')];
+        const track = document.querySelector('.cover-track');
+        const subtab = document.querySelector('#subtab');
+        const backArrow = subtab.querySelector('.back-arrow');
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        let transitioning = false;
+        let activeCover = null;
+        let currentCoverIndex = 0;
+
+        covers.forEach((cover, index) => { cover.inert = index !== currentCoverIndex; });
+
+        function goToCover(index) {
+            if (subtab.open || transitioning) return;
+            const nextIndex = Math.max(0, Math.min(covers.length - 1, index));
+            if (nextIndex === currentCoverIndex) return;
+            const moveFocus = covers[currentCoverIndex].contains(document.activeElement);
+            currentCoverIndex = nextIndex;
+            transitioning = true;
+            covers.forEach((cover, i) => { cover.inert = i !== currentCoverIndex; });
+            track.style.setProperty('--cover-index', currentCoverIndex);
+            if (moveFocus) covers[currentCoverIndex].focus({ preventScroll: true });
+            window.setTimeout(() => { transitioning = false; }, reducedMotion.matches ? 0 : 800);
+        }
+
+        function openSubtab(cover) {
+            if (subtab.open || transitioning) return;
+            activeCover = cover;
+            subtab.dataset.cover = cover.id;
+            subtab.querySelectorAll('[data-subtab]').forEach(page => {
+                page.hidden = page.dataset.subtab !== cover.id;
+            });
+            subtab.setAttribute('aria-label', `${cover.querySelector('h1, h2').textContent} subpage`);
+            transitioning = true;
+            subtab.showModal();
+            // Establish the starting position before beginning the slide.
+            subtab.getBoundingClientRect();
+            subtab.classList.add('is-open');
+            window.setTimeout(() => { transitioning = false; }, reducedMotion.matches ? 0 : 800);
+        }
+
+        function closeSubtab() {
+            if (!subtab.open || transitioning) return;
+            transitioning = true;
+            subtab.classList.remove('is-open');
+            window.setTimeout(() => {
+                subtab.close();
+                activeCover.querySelector('.cover-arrow').focus({ preventScroll: true });
+                transitioning = false;
+            }, reducedMotion.matches ? 0 : 800);
+        }
+
+        covers.forEach(cover => {
+            cover.querySelector('.cover-arrow').addEventListener('click', () => openSubtab(cover));
+        });
+        backArrow.addEventListener('click', closeSubtab);
+        subtab.addEventListener('cancel', event => {
+            event.preventDefault();
+            closeSubtab();
+        });
+
+        // Consume one gesture per page, including its trackpad inertia.
+        let gestureAxis = null;
+        let gestureDistance = 0;
+        let gestureHandled = false;
+        let gestureTimer;
+        let tailMagnitude = Infinity;
+
+        function resetGesture() {
+            gestureAxis = null;
+            gestureDistance = 0;
+            gestureHandled = false;
+            tailMagnitude = Infinity;
+        }
+
+        window.addEventListener('wheel', event => {
+            if (event.ctrlKey) return;
+            event.preventDefault();
+
+            const axis = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? 'x' : 'y';
+            const delta = axis === 'x' ? event.deltaX : event.deltaY;
+            const pageSize = axis === 'x' ? window.innerWidth : window.innerHeight;
+            const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? pageSize : 1;
+            const distance = delta * unit;
+            const magnitude = Math.abs(distance);
+            // Tiny trackpad tail events must not keep the gesture locked forever.
+            if (magnitude < 1.5) return;
+
+            window.clearTimeout(gestureTimer);
+            gestureTimer = window.setTimeout(resetGesture, 160);
+
+            // A fresh swipe accelerates again, unlike the decaying inertia of the last one.
+            // Recognize that new impulse even when the device sends no idle gap.
+            const newImpulse = gestureHandled && magnitude >= Math.max(10, tailMagnitude * 2.5);
+            const reversed = gestureAxis === axis && gestureDistance * distance < 0;
+            if (!transitioning && (newImpulse || reversed)) {
+                resetGesture();
+            }
+            if (gestureAxis && gestureAxis !== axis) return;
+            gestureAxis = axis;
+            if (gestureHandled) tailMagnitude = Math.min(tailMagnitude, magnitude);
+            if (transitioning || gestureHandled) return;
+
+            gestureDistance += distance;
+            if (Math.abs(gestureDistance) < 45) return;
+            gestureHandled = true;
+            tailMagnitude = magnitude;
+
+            if (axis === 'y') {
+                if (!subtab.open) goToCover(currentCoverIndex + Math.sign(gestureDistance));
+            } else if (subtab.open && gestureDistance < 0) {
+                closeSubtab();
+            } else if (!subtab.open && gestureDistance > 0) {
+                openSubtab(covers[currentCoverIndex]);
+            }
+        }, { passive: false, capture: true });
+
+        window.addEventListener('keydown', event => {
+            if (subtab.open || event.ctrlKey || event.altKey || event.metaKey) return;
+            if (event.target.closest('input, textarea, select, [contenteditable]')) return;
+            if (event.key === ' ' && event.target.closest('button')) return;
+            let index;
+            if (event.key === 'ArrowDown' || event.key === 'PageDown' || (event.key === ' ' && !event.shiftKey)) {
+                index = currentCoverIndex + 1;
+            } else if (event.key === 'ArrowUp' || event.key === 'PageUp' || (event.key === ' ' && event.shiftKey)) {
+                index = currentCoverIndex - 1;
+            } else if (event.key === 'Home') {
+                index = 0;
+            } else if (event.key === 'End') {
+                index = covers.length - 1;
+            } else {
+                return;
+            }
+            event.preventDefault();
+            goToCover(index);
+        });
+
+        let touchStart = null;
+        window.addEventListener('touchstart', event => {
+            touchStart = event.touches.length === 1
+                ? { x: event.touches[0].clientX, y: event.touches[0].clientY } : null;
+        }, { passive: true });
+        window.addEventListener('touchcancel', () => { touchStart = null; }, { passive: true });
+        window.addEventListener('touchend', event => {
+            if (!touchStart) return;
+            const dx = event.changedTouches[0].clientX - touchStart.x;
+            const dy = event.changedTouches[0].clientY - touchStart.y;
+            touchStart = null;
+            if (transitioning || Math.max(Math.abs(dx), Math.abs(dy)) < 45) return;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                if (subtab.open && dx > 0) closeSubtab();
+                else if (!subtab.open && dx < 0) openSubtab(covers[currentCoverIndex]);
+            } else if (!subtab.open) {
+                goToCover(currentCoverIndex - Math.sign(dy));
+            }
+        }, { passive: true });
+    </script>
+    <script src="assets/works.js"></script>
+    <script src="assets/polygon.js"></script>
 </body>
 </html>
