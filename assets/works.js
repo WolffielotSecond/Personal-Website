@@ -19,7 +19,7 @@ const workDetails = {
         video: 'assets/videos/steam-trailer-web.mp4',
         poster: 'assets/covers/the-awakening-legacy.jpg',
     },
-    '3': { name: 'THE RETRIVAL', action: 'PLAY ONLINE', video: 'assets/videos/black-screen.mp4' },
+    '3': { name: 'THE RETRIVAL', action: 'PLAY ONLINE', video: 'assets/videos/the-retrieval.mp4' },
     '4': { name: 'THE HOUSE OF JANUS', action: 'PLAY ONLINE', video: 'assets/videos/black-screen.mp4' },
 };
 const visibleCoverCount = 4;
@@ -117,6 +117,7 @@ playOnline.addEventListener('click', () => {
     if (previewSwitching) return;
     const url = workDetails[currentWork].url;
     if (url) window.open(url, '_blank', 'noopener,noreferrer');
+    else startWorkPlay(currentWork);
 });
 
 function createPreviewLayer(work, className) {
@@ -213,7 +214,7 @@ new ResizeObserver(updatePreviewGrid).observe(workPreview);
 window.addEventListener('resize', updatePreviewGrid);
 
 function syncWorkVideoPlayback() {
-    const visible = worksPage.closest('dialog').open && !worksPage.hidden && !document.hidden;
+    const visible = worksDialog.open && !worksPage.hidden && !document.hidden && !worksPage.querySelector('.play-view.is-ready');
     workPreview.querySelectorAll('video').forEach(video => {
         if (visible) video.play().catch(() => {});
         else video.pause();

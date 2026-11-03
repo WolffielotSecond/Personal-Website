@@ -509,6 +509,121 @@
             inset: 2vh 0 0;
         }
 
+        .play-view, .play-guide {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            transition: transform 550ms cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        .play-view {
+            pointer-events: none;
+        }
+
+        .play-view .preview-feather {
+            inset: auto;
+            transition: left 1s ease-in-out, top 1s ease-in-out,
+                width 1s ease-in-out, height 1s ease-in-out;
+        }
+
+        .play-view .preview-polygon {
+            transition: clip-path 1s ease-in-out;
+        }
+
+        .play-view.is-expanding .preview-polygon {
+            clip-path: polygon(0% 50%, 0% 0%, 50% 0%, 100% 0%, 100% 50%, 100% 100%, 50% 100%, 0% 100%);
+        }
+
+        .play-view .preview-video {
+            transition: opacity 1s ease-in-out;
+        }
+
+        .play-view.is-expanding .preview-video { opacity: 0; }
+
+        .play-view.is-ready .preview-feather {
+            transition: none;
+        }
+
+        .play-view.is-ready .preview-polygon-soft {
+            filter: none;
+        }
+
+        .works-page.is-playing:not(.is-play-returning) .works-sidebar {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .unity-mount {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: #000;
+            pointer-events: auto;
+        }
+
+        .unity-mount iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .play-guide {
+            display: grid;
+            align-content: center;
+            padding: 72px clamp(76px, 12vw, 200px);
+            overflow: auto;
+            color: #fff;
+            transform: translateY(100%);
+        }
+
+        .play-view[hidden], .play-guide[hidden], .play-guide-arrow[hidden] {
+            display: none;
+        }
+
+        .works-page.is-guide-open .play-view { transform: translateY(-100%); }
+        .works-page.is-guide-open .play-guide { transform: translateY(0); }
+
+        .play-guide h3 { font-size: clamp(24px, 5vw, 54px); margin: 0 0 0.5em; }
+        .play-guide dl { margin: 0; max-width: 500px; }
+        .play-guide dl div { display: flex; justify-content: space-between; gap: 1em; padding: 0.65em 0; }
+        .play-guide dd { margin: 0; opacity: 0.75; }
+
+        .play-guide-arrow {
+            position: absolute;
+            left: 50%;
+            bottom: 8px;
+            transform: translateX(-50%);
+            display: grid;
+            place-items: center;
+            width: 58px;
+            height: 48px;
+            border: 0;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .play-guide-arrow svg {
+            width: 22px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transform: rotate(90deg);
+        }
+
+        .play-guide-return { top: 8px; bottom: auto; }
+        .play-guide-return svg { transform: rotate(-90deg); }
+        .play-guide-arrow:focus-visible svg { stroke-width: 2.5; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .play-view, .play-guide, .play-view .preview-feather,
+            .play-view .preview-polygon, .play-view .preview-video { transition: none; }
+        }
+
         .preview-filter-defs {
             position: absolute;
             width: 0;
@@ -784,6 +899,22 @@
                 </div>
                 <button class="play-online" type="button">STEAM PAGE</button>
             </div>
+            <div class="play-view" hidden inert>
+                <button class="play-guide-arrow play-guide-open" type="button" aria-label="Open controls guide" aria-controls="play-guide" hidden>
+                    <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
+                </button>
+            </div>
+            <section class="play-guide" id="play-guide" aria-labelledby="play-guide-title" hidden inert>
+                <button class="play-guide-arrow play-guide-return" type="button" aria-label="Return to game">
+                    <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
+                </button>
+                <h3 id="play-guide-title">操作指南</h3>
+                <dl>
+                    <div><dt>移动</dt><dd>待补充</dd></div>
+                    <div><dt>视角</dt><dd>待补充</dd></div>
+                    <div><dt>交互</dt><dd>待补充</dd></div>
+                </dl>
+            </section>
         </section>
         <section data-subtab="writing" aria-label="Writing / Fragments content" hidden></section>
         <section data-subtab="about" aria-label="About me content" hidden></section>
@@ -792,6 +923,8 @@
         </button>
     </dialog>
     <script>
+        window.addEventListener('contextmenu', event => event.preventDefault(), { capture: true });
+
         const covers = [...document.querySelectorAll('.panel')];
         const track = document.querySelector('.cover-track');
         const subtab = document.querySelector('#subtab');
@@ -868,6 +1001,7 @@
 
         window.addEventListener('wheel', event => {
             if (event.ctrlKey) return;
+            if (Math.abs(event.deltaY) > Math.abs(event.deltaX) && event.target?.closest?.('.play-guide')) return;
             event.preventDefault();
 
             const axis = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? 'x' : 'y';
@@ -950,5 +1084,6 @@
     </script>
     <script src="assets/works.js"></script>
     <script src="assets/polygon.js"></script>
+    <script src="assets/play.js"></script>
 </body>
 </html>

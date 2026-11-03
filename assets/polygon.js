@@ -32,7 +32,7 @@
     }
 
     function syncMotion() {
-        const visible = dialog.open && !page.hidden && !document.hidden;
+        const visible = dialog.open && !page.hidden && !document.hidden && !page.classList.contains('is-playing');
         if (!visible || reducedMotion.matches) {
             if (frame !== null) window.cancelAnimationFrame(frame);
             frame = null;
@@ -45,7 +45,7 @@
 
     const observer = new MutationObserver(syncMotion);
     observer.observe(dialog, { attributes: true, attributeFilter: ['open'] });
-    observer.observe(page, { attributes: true, attributeFilter: ['hidden'] });
+    observer.observe(page, { attributes: true, attributeFilter: ['hidden', 'class'] });
     document.addEventListener('visibilitychange', syncMotion);
     reducedMotion.addEventListener('change', syncMotion);
     syncMotion();
