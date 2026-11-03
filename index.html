@@ -160,6 +160,7 @@
             height: 100vh;
             height: 100dvh;
             max-height: none;
+            overflow: clip;
             margin: 0;
             padding: 0;
             border: 0;
@@ -178,17 +179,56 @@
             transform: translateX(0);
         }
 
+        /* Counter the white page's motion so its black title stays aligned with the cover. */
+        .subtab[data-cover="works"]::before {
+            content: "WORKS";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            color: #000;
+            font-family: inherit;
+            font-size: min(25vw, 52dvh);
+            font-weight: 400;
+            line-height: 0.76;
+            letter-spacing: -0.065em;
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
+            transform: translateX(-100vw);
+            transition: transform 800ms cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        .subtab[data-cover="works"].is-open::before {
+            transform: translateX(0);
+        }
+
         .back-arrow {
+            z-index: 5;
             left: clamp(20px, 3vw, 64px);
             right: auto;
         }
 
+        .subtab[data-cover="works"] .back-arrow {
+            color: #fff;
+        }
+
         .back-arrow svg {
-            animation: none;
+            animation: arrow-nudge-left 3.6s ease-in-out infinite;
+        }
+
+        @keyframes arrow-nudge-left {
+            0%, 70%, 90%, 100% {
+                transform: translateX(0);
+            }
+            80% {
+                transform: translateX(-9px);
+            }
         }
 
         .works-page {
             --accent: #78D6D3;
+            position: relative;
+            overflow: clip;
             height: 100%;
             padding: 3vh 1vw 2vh 12vw;
             display: grid;
@@ -198,6 +238,91 @@
 
         .works-page[hidden] {
             display: none;
+        }
+
+        .works-background {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            background: #fff;
+            transform: translateX(100%);
+            transition: transform 800ms cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        .works-page.is-background-in .works-background {
+            transform: translateX(0);
+        }
+
+        .works-background-images {
+            position: absolute;
+            inset: -12px;
+            filter: brightness(1) blur(0px);
+            transition: filter 200ms ease-in-out;
+        }
+
+        .works-page.is-background-dim .works-background-images {
+            filter: brightness(0.7) blur(8px);
+        }
+
+        .works-background-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            animation: works-background-drift 30s linear infinite;
+        }
+
+        @keyframes works-background-drift {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        .works-background-image {
+            position: absolute;
+            inset: 0;
+            display: flex;
+        }
+
+        .works-background-tile {
+            flex: 0 0 50%;
+            height: 100%;
+            background-image: var(--work-background);
+            background-position: center;
+            background-size: cover;
+        }
+
+        .works-background-image.is-incoming {
+            animation: works-background-crossfade 400ms ease-in-out both;
+        }
+
+        @keyframes works-background-crossfade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .works-sidebar, .works-stage {
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transform: translateX(clamp(48px, 6vw, 96px));
+            pointer-events: none;
+            transition: opacity 450ms ease-in-out, transform 450ms cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        .works-page.is-content-visible .works-sidebar,
+        .works-page.is-content-visible .works-stage {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .works-page.is-resetting .works-background,
+        .works-page.is-resetting .works-background-images,
+        .works-page.is-resetting .works-sidebar,
+        .works-page.is-resetting .works-stage {
+            transition: none;
         }
 
         .works-sidebar {
@@ -214,20 +339,26 @@
             width: clamp(40px, 8vh, 76px);
             aspect-ratio: 1;
             padding: 0;
-            border: 0;
-            background: transparent;
-            color: #000;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            background: #000;
+            color: var(--accent);
             cursor: pointer;
-            transition: color 180ms, opacity 180ms;
+            transition: background-color 180ms, border-color 180ms, color 180ms, opacity 180ms;
             -webkit-tap-highlight-color: transparent;
         }
 
         .works-nav:not(:disabled):hover {
-            color: var(--accent);
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
         }
 
         .works-nav:disabled {
-            opacity: 0.18;
+            background: #171717;
+            border-color: #666;
+            color: #777;
+            opacity: 0.55;
             cursor: default;
         }
 
@@ -236,7 +367,7 @@
             height: 32px;
             fill: none;
             stroke: currentColor;
-            stroke-width: 1.5;
+            stroke-width: 2.2;
             stroke-linecap: round;
             stroke-linejoin: round;
             transform: rotate(-90deg);
@@ -255,13 +386,21 @@
             translate: 0 3px;
         }
 
+        .works-frame-soft {
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+            filter: url(#sidebar-edge-feather);
+        }
+
         .works-frame {
             width: 100%;
             height: 100%;
             min-height: 0;
             padding: 5px;
-            border: 3px solid #000;
+            border: 3px solid #fff;
             border-radius: 18px;
+            background: #fff;
         }
 
         .works-viewport {
@@ -289,7 +428,7 @@
             width: 100%;
             overflow: hidden;
             padding: 0;
-            border: 3px solid #000;
+            border: 3px solid #fff;
             border-radius: 12px;
             background: #171c25;
             color: #fff;
@@ -338,6 +477,19 @@
             letter-spacing: -0.03em;
         }
 
+        .work-card[data-work="1"] .work-name,
+        .work-card[data-work="2"] .work-name {
+            font-weight: 700;
+            -webkit-text-stroke: 2px #000;
+            paint-order: stroke fill;
+        }
+
+        .work-card[data-work="2"] .work-name {
+            font-size: clamp(8px, 1.12vw, 19px);
+            letter-spacing: -0.04em;
+            white-space: nowrap;
+        }
+
         .work-coming-soon {
             display: grid;
             place-items: center;
@@ -352,23 +504,25 @@
             min-width: 0;
         }
 
-        .work-preview {
+        .preview-feather {
             position: absolute;
             inset: 2vh 0 0;
+        }
+
+        .preview-filter-defs {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .work-preview {
+            position: absolute;
+            inset: 0;
             --tile-size: 160px;
             --grid-x: 0px;
             --grid-y: 0px;
-            clip-path: polygon(1% 43%, 6% 8%, 43% 2%, 92% 5%, 99% 34%, 95% 92%, 57% 98%, 5% 93%);
-        }
-
-        .preview-edge {
-            position: absolute;
-            top: 2vh;
-            left: 0;
-            z-index: 1;
-            width: 100%;
-            height: calc(100% - 2vh);
-            pointer-events: none;
+            --preview-shape: polygon(1% 43%, 6% 8%, 43% 2%, 92% 5%, 99% 34%, 95% 92%, 57% 98%, 5% 93%);
         }
 
         @property --checker-a {
@@ -383,7 +537,7 @@
             initial-value: 1;
         }
 
-        .preview-layer, .preview-video {
+        .preview-layer, .preview-polygon-soft, .preview-polygon, .preview-video {
             position: absolute;
             inset: 0;
             width: 100%;
@@ -391,7 +545,12 @@
             pointer-events: none;
         }
 
-        .preview-layer {
+        .preview-polygon-soft {
+            filter: url(#preview-alpha-feather);
+        }
+
+        .preview-polygon {
+            clip-path: var(--preview-shape);
             background: var(--preview-color);
         }
 
@@ -438,7 +597,7 @@
             width: min(80%, 560px);
             min-height: 48px;
             padding: 0.45em 0.8em;
-            border: 0;
+            border: 2px solid #fff;
             border-radius: 999px;
             overflow: hidden;
             background: #000;
@@ -453,18 +612,25 @@
             -webkit-tap-highlight-color: transparent;
             opacity: 1;
             visibility: visible;
-            transition: opacity 200ms ease-in-out, visibility 0s, background-color 180ms, color 180ms;
+            transition: opacity 200ms ease-in-out, visibility 0s, background-color 180ms, border-color 180ms, color 180ms;
         }
 
         .play-online.is-hidden {
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
-            transition: opacity 200ms ease-in-out, visibility 0s 200ms, background-color 180ms, color 180ms;
+            transition: opacity 200ms ease-in-out, visibility 0s 200ms, background-color 180ms, border-color 180ms, color 180ms;
         }
 
         .play-online:hover {
             background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+        }
+
+        .play-online:active {
+            background: var(--accent);
+            border-color: color-mix(in srgb, var(--accent), #fff 22%);
             color: #000;
         }
 
@@ -502,7 +668,9 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .subtab, .cover-track, .works-track, .work-selection {
+            .subtab, .cover-track, .works-track, .work-selection,
+            .works-background, .works-background-images, .works-sidebar, .works-stage,
+            .subtab[data-cover="works"]::before {
                 transition-duration: 0s;
             }
 
@@ -511,7 +679,7 @@
                 translate: none;
             }
 
-            .cover-arrow svg {
+            .cover-arrow svg, .works-background-image.is-incoming, .works-background-track {
                 animation: none;
             }
 
@@ -553,10 +721,16 @@
     <dialog class="subtab" id="subtab" aria-label="Subpage">
         <section data-subtab="home" aria-label="Home content" hidden></section>
         <section class="works-page" data-subtab="works" aria-label="Works content" hidden>
+            <div class="works-background" aria-hidden="true">
+                <div class="works-background-images">
+                    <div class="works-background-track"></div>
+                </div>
+            </div>
             <div class="works-sidebar" aria-label="Work covers">
                 <button class="works-nav works-nav-up" type="button" aria-label="Previous covers" disabled>
                     <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
                 </button>
+                <div class="works-frame-soft">
                 <div class="works-frame">
                     <div class="works-viewport">
                         <div class="works-track">
@@ -581,20 +755,33 @@
                         </div>
                     </div>
                 </div>
+                </div>
                 <button class="works-nav works-nav-down" type="button" aria-label="Next covers">
                     <svg viewBox="0 0 28 56" aria-hidden="true"><path d="M6 5 L22 28 L6 51"/></svg>
                 </button>
             </div>
             <div class="works-stage">
-                <div class="work-preview" role="img" aria-label="THE AWAKENING video"></div>
-                <svg class="preview-edge" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
+                <svg class="preview-filter-defs" aria-hidden="true">
                     <defs>
-                        <filter id="preview-edge-soften" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-                            <feGaussianBlur stdDeviation="8"/>
+                        <filter id="preview-alpha-feather" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="10" result="soft-alpha"/>
+                            <feComponentTransfer in="soft-alpha" result="feathered-alpha">
+                                <feFuncA type="table" tableValues="0 0 1"/>
+                            </feComponentTransfer>
+                            <feComposite in="SourceGraphic" in2="feathered-alpha" operator="in"/>
+                        </filter>
+                        <filter id="sidebar-edge-feather" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="3.5" result="soft-alpha"/>
+                            <feComponentTransfer in="soft-alpha" result="feathered-alpha">
+                                <feFuncA type="table" tableValues="0 0 1"/>
+                            </feComponentTransfer>
+                            <feComposite in="SourceGraphic" in2="feathered-alpha" operator="in"/>
                         </filter>
                     </defs>
-                    <polygon points="10,430 60,80 430,20 920,50 990,340 950,920 570,980 50,930" fill="none" stroke="white" stroke-width="40" filter="url(#preview-edge-soften)"/>
                 </svg>
+                <div class="preview-feather">
+                    <div class="work-preview" role="img" aria-label="THE AWAKENING video"></div>
+                </div>
                 <button class="play-online" type="button">STEAM PAGE</button>
             </div>
         </section>

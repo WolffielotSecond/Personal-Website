@@ -28,6 +28,83 @@ const previewReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 let currentWork = '1';
 let requestedWork = currentWork;
 let previewSwitching = false;
+const worksDialog = worksPage.closest('dialog');
+// Every image shares this persistent track, so crossfades never restart the scroll.
+const backgroundImages = worksPage.querySelector('.works-background-track');
+const entranceParts = [worksPage.querySelector('.works-sidebar'), worksPage.querySelector('.works-stage')];
+let backgroundVersion = 0;
+let entranceTimers = [];
+let worksWasVisible = false;
+
+function setWorkBackground(work, animate = true) {
+    const card = worksPage.querySelector(`.work-card[data-work="${work}"]`);
+    const source = card.querySelector('img').getAttribute('src');
+    const layer = document.createElement('div');
+    layer.className = 'works-background-image';
+    layer.dataset.work = work;
+    layer.style.setProperty('--work-background', `url("${source}")`);
+    for (let i = 0; i < 2; i++) {
+        const tile = document.createElement('div');
+        tile.className = 'works-background-tile';
+        layer.append(tile);
+    }
+    const version = ++backgroundVersion;
+    if (!animate || previewReducedMotion.matches || !backgroundImages.children.length) {
+        backgroundImages.replaceChildren(layer);
+    } else {
+        layer.classList.add('is-incoming');
+        backgroundImages.append(layer);
+        window.setTimeout(() => {
+            if (version !== backgroundVersion) return;
+            layer.classList.remove('is-incoming');
+            backgroundImages.replaceChildren(layer);
+        }, 400);
+    }
+}
+
+function beginWorksEntrance() {
+    entranceTimers.forEach(timer => window.clearTimeout(timer));
+    entranceTimers = [];
+    setWorkBackground(requestedWork, false);
+    worksPage.classList.add('is-resetting');
+    worksPage.classList.remove('is-background-in', 'is-background-dim', 'is-content-visible');
+    entranceParts.forEach(part => { part.inert = true; });
+    worksPage.getBoundingClientRect();
+    worksPage.classList.remove('is-resetting');
+    if (previewReducedMotion.matches) {
+        worksPage.classList.add('is-background-in', 'is-background-dim', 'is-content-visible');
+        entranceParts.forEach(part => { part.inert = false; });
+        updatePreviewGrid();
+        return;
+    }
+    // Follow the white page by 150 ms, using the same 800 ms slide curve.
+    entranceTimers.push(window.setTimeout(() => {
+        worksPage.classList.add('is-background-in', 'is-background-dim');
+    }, 150));
+    // Let the UI become visible on screen before playing its separate slide and fade.
+    entranceTimers.push(window.setTimeout(() => {
+        worksPage.classList.add('is-content-visible');
+        entranceParts.forEach(part => { part.inert = false; });
+    }, 500));
+    entranceTimers.push(window.setTimeout(updatePreviewGrid, 950));
+    entranceTimers.push(window.setTimeout(updatePreviewGrid, 1150));
+}
+
+function syncWorksEntrance() {
+    const visible = worksDialog.open && !worksPage.hidden;
+    if (visible && !worksWasVisible) beginWorksEntrance();
+    if (!visible) {
+        entranceTimers.forEach(timer => window.clearTimeout(timer));
+        entranceTimers = [];
+        // Keep the finished layout intact throughout the dialog's slide back out.
+    }
+    worksWasVisible = visible;
+}
+
+const entranceObserver = new MutationObserver(syncWorksEntrance);
+entranceObserver.observe(worksDialog, { attributes: true, attributeFilter: ['open'] });
+entranceObserver.observe(worksPage, { attributes: true, attributeFilter: ['hidden'] });
+syncWorksEntrance();
 
 function updateWorkAction(work) {
     const details = workDetails[work];
@@ -48,6 +125,13 @@ function createPreviewLayer(work, className) {
     layer.dataset.work = work;
     layer.style.setProperty('--preview-color', '#000');
     layer.setAttribute('aria-hidden', 'true');
+    // Soften the polygon first, then cut the result with the outer layer's sharp checker mask.
+    const softPolygon = document.createElement('div');
+    softPolygon.className = 'preview-polygon-soft';
+    const polygon = document.createElement('div');
+    polygon.className = 'preview-polygon';
+    softPolygon.append(polygon);
+    layer.append(softPolygon);
     const details = workDetails[work];
     if (details.video) {
         const video = document.createElement('video');
@@ -60,7 +144,7 @@ function createPreviewLayer(work, className) {
         video.preload = 'auto';
         if (details.poster) video.poster = details.poster;
         video.src = details.video;
-        layer.append(video);
+        polygon.append(video);
     }
     return layer;
 }
@@ -166,6 +250,7 @@ worksPage.querySelectorAll('.work-card[data-work]').forEach(card => {
             other.setAttribute('aria-pressed', String(other === card));
         });
         worksTrack.style.setProperty('--selected-index', workCards.indexOf(card));
+        if (requestedWork !== card.dataset.work) setWorkBackground(card.dataset.work);
         switchWorkPreview(card.dataset.work);
     });
 });

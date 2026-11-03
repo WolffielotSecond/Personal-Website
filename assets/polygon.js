@@ -1,7 +1,6 @@
 (() => {
     const page = document.querySelector('.works-page');
     const preview = page.querySelector('.work-preview');
-    const edge = page.querySelector('.preview-edge polygon');
     const dialog = page.closest('dialog');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const vertices = [
@@ -21,9 +20,8 @@
             const dy = ay * (Math.sin(seconds * Math.PI * 2 / 11 + phase + 1.1) - Math.sin(phase + 1.1));
             return [x + dx, y + dy];
         });
-        // Both contours use the same coordinates, so the soft edge never lags behind.
-        preview.style.clipPath = `polygon(${points.map(([x, y]) => `${x.toFixed(3)}% ${y.toFixed(3)}%`).join(', ')})`;
-        edge.setAttribute('points', points.map(([x, y]) => `${(x * 10).toFixed(3)},${(y * 10).toFixed(3)}`).join(' '));
+        // Both video layers inherit the same silhouette; their checker masks stay outside its feathering.
+        preview.style.setProperty('--preview-shape', `polygon(${points.map(([x, y]) => `${x.toFixed(3)}% ${y.toFixed(3)}%`).join(', ')})`);
     }
 
     function animate(time) {
