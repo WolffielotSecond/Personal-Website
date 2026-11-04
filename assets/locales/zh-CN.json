@@ -27,7 +27,7 @@
     "actions": {
         "STEAM PAGE": "STEAM商店页面",
         "DOWNLOAD GAME": "下载游戏",
-        "PLAY ONLINE": "在线试玩"
+        "PLAY ONLINE": "在线游玩"
     },
     "select": "选择{name}",
     "video": "{name}预览视频",
