@@ -13,7 +13,7 @@ const workDetails = {
         introduction: 'the-awakening.md',
         action: 'STEAM PAGE',
         url: 'https://store.steampowered.com/app/4811530/The_Awakening/',
-        video: 'assets/videos/black-screen.mp4',
+        previewImage: 'assets/covers/awakening-placeholder.png',
     },
     '2': {
         name: 'THE AWAKENING LEGACY',
@@ -168,6 +168,8 @@ function createPreviewLayer(work, className) {
         if (details.poster) video.poster = details.poster;
         video.src = details.video;
         polygon.append(video);
+    } else if (details.previewImage) {
+        polygon.style.backgroundImage = `url("${details.previewImage}")`;
     }
     return layer;
 }

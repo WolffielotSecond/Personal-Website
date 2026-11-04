@@ -675,7 +675,7 @@
 
         .preview-polygon {
             clip-path: var(--preview-shape);
-            background: var(--preview-color);
+            background: var(--preview-color) center / cover no-repeat;
         }
 
         .preview-video {
@@ -971,7 +971,7 @@
                     <div class="works-viewport">
                         <div class="works-track">
                             <button class="work-card" type="button" data-work="1" aria-label="Select THE AWAKENING" aria-pressed="true">
-                                <img src="assets/covers/name-1.svg" alt="" draggable="false">
+                                <img src="assets/covers/awakening-placeholder.png" alt="" draggable="false">
                                 <span class="work-name">THE AWAKENING</span>
                             </button>
                             <button class="work-card" type="button" data-work="2" aria-label="Select THE AWAKENING LEGACY" aria-pressed="false">
@@ -1217,7 +1217,7 @@
         <button type="button" lang="en" data-language="en" aria-label="English">EN</button>
         <div class="language-highlight" aria-hidden="true"><span>中</span><span>EN</span></div>
     </div>
-    <script src="assets/works.js"></script>
+    <script src="assets/works.js?v=awakening-placeholder"></script>
     <script src="assets/polygon.js"></script>
     <script src="assets/play.js"></script>
     <script src="assets/language.js"></script>
